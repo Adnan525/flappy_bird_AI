@@ -5,8 +5,8 @@ import os
 import random
 
 # window size
-WIN_WIDTH = 600
-WIN_HEIGHT = 800
+WIN_WIDTH = 500
+WIN_HEIGHT = 700
 
 # load images
 BIRD_IMGS = [pygame.transform.scale2x(pygame.image.load(os.path.join("assets", "bird1.png"))), 
@@ -115,11 +115,16 @@ def drawWindow(win, bird:Bird):
 def main():
     bird = Bird(200, 200)
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+
+    clock = pygame.time.Clock()
+
     isRunning = True
     while isRunning:
+        clock.tick(30)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 isRunning = False
+        bird.move()
         drawWindow(win, bird)
     
     pygame.quit()
