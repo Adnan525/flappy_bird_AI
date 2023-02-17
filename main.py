@@ -1,3 +1,4 @@
+from typing import List
 import pygame
 import neat
 import time
@@ -180,15 +181,20 @@ class Base:
 # end of base class
 
 # main script
-def drawWindow(win, bird:Bird):
+def drawWindow(win, bird:Bird, pipes:List[Pipe], base:Base):
     win.blit(BG_IMG, (0,0))
+    for pipe in pipes:
+        pipe.draw(win)
+    base.draw(win)
     bird.draw(win)
     pygame.display.update()
 
 def main():
-    bird = Bird(200, 200)
+    score = 0
+    bird = Bird(230, 350)
+    base = Base(630)
+    pipes = [Pipe(700)]
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-
     clock = pygame.time.Clock()
 
     isRunning = True
@@ -197,8 +203,27 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 isRunning = False
-        bird.move()
-        drawWindow(win, bird)
+        # bird.move()
+        add_pipe = False
+        rem = []
+        for pipe in pipes:
+            if pipe.collide(bird):
+                print("===================> Collision detected")
+            if pipe.x + pipe.PIPE_TOP.get_width() < 0:
+                rem.append(pipe)
+            if not pipe.passed and pipe.x < bird.x:
+                pipe.passed = True
+                add_pipe = True
+            pipe.move()
+        if add_pipe:
+            score += 1
+            pipes.append(Pipe(600))
+        for r in rem:
+            pipes.remove(r)
+
+        base.move()
+
+        drawWindow(win, bird, pipes, base)
     
     pygame.quit()
     quit()
